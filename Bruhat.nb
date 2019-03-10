@@ -1,0 +1,836 @@
+(************** Content-type: application/mathematica **************
+
+                    Mathematica-Compatible Notebook
+
+This notebook can be used with any Mathematica-compatible
+application, such as Mathematica, MathReader or Publicon. The data
+for the notebook starts with the line containing stars above.
+
+To get the notebook into a Mathematica-compatible application, do
+one of the following:
+
+* Save the data starting with the line of stars above into a file
+  with a name ending in .nb, then open the file inside the
+  application;
+
+* Copy the data starting with the line of stars above to the
+  clipboard, then use the Paste menu command inside the application.
+
+Data for notebooks contains only printable 7-bit ASCII and can be
+sent directly in email or through ftp in text mode.  Newlines can be
+CR, LF or CRLF (Unix, Macintosh or MS-DOS style).
+
+NOTE: If you modify the data for this notebook not in a Mathematica-
+compatible application, you must delete the line below containing
+the word CacheID, otherwise Mathematica-compatible applications may
+try to use invalid cache data.
+
+For more information on notebooks and Mathematica-compatible 
+applications, contact Wolfram Research:
+  web: http://www.wolfram.com
+  email: info@wolfram.com
+  phone: +1-217-398-0700 (U.S.)
+
+Notebook reader applications are available free of charge from 
+Wolfram Research.
+*******************************************************************)
+
+(*CacheID: 232*)
+
+
+(*NotebookFileLineBreakTest
+NotebookFileLineBreakTest*)
+(*NotebookOptionsPosition[     25364,        697]*)
+(*NotebookOutlinePosition[     25990,        719]*)
+(*  CellTagsIndexPosition[     25946,        715]*)
+(*WindowFrame->Normal*)
+
+
+
+Notebook[{
+Cell[TextData[StyleBox["Prelude",
+  FontWeight->"Bold"]], "Text"],
+
+Cell[BoxData[
+    \(<< DiscreteMath`Permutations`\)], "Input"],
+
+Cell[BoxData[
+    \(Off[General::spell1]\)], "Input"],
+
+Cell[BoxData[
+    \(Iverson[pred_] := If[pred, 1, 0]\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell[TextData[StyleBox["Permutations",
+  FontWeight->"Bold"]], "Text"],
+
+Cell[BoxData[
+    \(ApplyPerm[p_, x_] := \ p[\([x]\)]\)], "Input"],
+
+Cell[BoxData[
+    \(InversePerm[p_] := 
+      Flatten[Table[Position[p, i], {i, Length[p]}]]\)], "Input"],
+
+Cell[BoxData[
+    \(ComposePerm[q_, p_] := \(ApplyPerm[q, #] &\) /@ p\)], "Input"],
+
+Cell[BoxData[
+    \(PermutationMatrix[
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Inverse[
+          Map[\((Table[Iverson[# \[Equal] j], {j, n}])\) &, \ p]]]\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell["GL_n(R)", "Text",
+  FontWeight->"Bold"],
+
+Cell[BoxData[
+    \(SecondaryAinColumnQ[matrix_, rows_, column_, row_] := 
+      Det[matrix[\([Append[rows, row], Range[column]]\)]] === 0\)], "Input"],
+
+Cell[BoxData[
+    \(CharacterizingAinColumn[matrix_, rows_, 
+        column_] := \[IndentingNewLine]Do[
+        If[Not[MemberQ[rows, i]] && 
+            Not[SecondaryAinColumnQ[matrix, rows, column, i]], 
+          Return[i]], \[IndentingNewLine]{i, \(Dimensions[matrix]\)[\([1]\)], 
+          1, \(-1\)}]\)], "Input"],
+
+Cell[BoxData[
+    \(CharacterizingAHelper[matrix_, cas_] := \[IndentingNewLine]If[
+        Length[cas] \[Equal] \(Dimensions[matrix]\)[\([1]\)], 
+        cas, \[IndentingNewLine]CharacterizingAHelper[matrix, 
+          Append[cas, 
+            CharacterizingAinColumn[matrix, cas, 
+              Length[cas] + 1]]]]\)], "Input"],
+
+Cell[BoxData[
+    \(BruhatPermutation[matrix_] := \[IndentingNewLine]CharacterizingAHelper[
+        matrix, {}]\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell["(\[Alpha],\[Beta]) matricies", "Text",
+  FontWeight->"Bold"],
+
+Cell[BoxData[
+    \(AlphaIJ[i_, j_] := Subscript[\[Alpha], i, j]\)], "Input"],
+
+Cell[BoxData[
+    \(BetaIJ[i_, j_] := Subscript[\[Beta], i, j]\)], "Input"],
+
+Cell[BoxData[
+    \(ABRow[x_] := x[\([2]\)]\)], "Input"],
+
+Cell[BoxData[
+    \(ABCol[x_] := x[\([3]\)]\)], "Input"],
+
+Cell[BoxData[
+    \(UpperDiagonalA[
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Table[
+          AlphaIJ[i, j]*Iverson[i \[LessEqual] j], {i, n}, {j, 
+            n}]]\)], "Input"],
+
+Cell[BoxData[
+    \(ZeroBetaQ[p_, i_, 
+        j_] := \[IndentingNewLine]\((i > j)\) || \((ApplyPerm[p, i] < 
+            ApplyPerm[p, j])\)\)], "Input"],
+
+Cell[BoxData[
+    \(NonconstantBetaQ[p_, i_, 
+        j_] := \[IndentingNewLine]\((i < j)\) && \((ApplyPerm[p, i] > 
+            ApplyPerm[p, j])\)\)], "Input"],
+
+Cell[BoxData[
+    \(NonconstantBetas[
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[NonconstantBetaQ[p, i, j], BetaIJ[i, j], {}], {i, n}, {j, 
+              n}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(ConstantBetaQ[p_, i_, j_] := \[IndentingNewLine]Not[
+        NonconstantBetaQ[p, i, j]]\)], "Input"],
+
+Cell[BoxData[
+    \(UpperDiagonalB[
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Table[
+          BetaIJ[i, j]*Iverson[NonconstantBetaQ[p, i, j]] + 
+            Iverson[i \[Equal] j], {i, n}, {j, n}]]\)], "Input"],
+
+Cell[BoxData[
+    \(APB[p_] := \[IndentingNewLine]UpperDiagonalA[p] . 
+        PermutationMatrix[p] . UpperDiagonalB[p]\)], "Input"],
+
+Cell[BoxData[
+    \(UnionAPB[n_] := \[IndentingNewLine]Map[APB[#] &, 
+        Permutations[Range[n]]]\)], "Input"],
+
+Cell[BoxData[
+    \(Tau[i_, j_, 
+        p_] := \[IndentingNewLine]With[{pii = ApplyPerm[InversePerm[p], i], 
+          pj = ApplyPerm[p, j]}, \[IndentingNewLine]If[
+          NonconstantBetaQ[p, pii, j], BetaIJ[pii, j], 
+          AlphaIJ[i, pj]]]\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell[TextData[Cell[BoxData[
+    \(a\_\(i, j\)\)],
+  FontWeight->"Bold"]], "Text"],
+
+Cell[BoxData[
+    \(AIJ[i_, j_] := Subscript[a, i, j]\)], "Input"],
+
+Cell[BoxData[
+    \(PrimaryAQ[p_, i_, 
+        j_] := \[IndentingNewLine]\((i \[LessEqual] 
+            ApplyPerm[p, j])\) || \((ApplyPerm[InversePerm[p], 
+              i] \[LessEqual] j)\)\)], "Input"],
+
+Cell[BoxData[
+    \(SecondaryAQ[p_, i_, j_] := \[IndentingNewLine]Not[
+        PrimaryAQ[p, i, j]]\)], "Input"],
+
+Cell[BoxData[
+    \(PrimaryAs[
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[PrimaryAQ[p, i, j], AIJ[i, j], {}], {i, n}, {j, 
+              n}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(PrimaryAj[j_, 
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[PrimaryAQ[p, i, j], i, {}], {i, 1, n}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(SecondaryAs[
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[SecondaryAQ[p, i, j], AIJ[i, j], {}], {i, n}, {j, 
+              n}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(Xj[j_, 
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[PrimaryAQ[p, i, j], Tau[i, j, p], {}], {i, 1, 
+              n}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(X[p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[i \[LessEqual] j, AlphaIJ[i, j], 
+              If[NonconstantBetaQ[p, j, i], BetaIJ[j, i], {}]], {i, n}, {j, 
+              n}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(Aj[mat_, j_, 
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[PrimaryAQ[p, i, j], \(mat[\([i]\)]\)[\([j]\)], {}], {i, 
+              n}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(A[p_, 
+        mat_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]Flatten[
+          Table[If[PrimaryAQ[p, i, j], \(mat[\([i]\)]\)[\([j]\)], {}], {i, 
+              n}, {j, n}]]]\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell["Cramer's Rule", "Text",
+  FontWeight->"Bold"],
+
+Cell[BoxData[
+    \(JacobianMatrix[f_, vars_] := \[IndentingNewLine]Transpose[
+        Table[D[f, vars[\([i]\)]], {i, Length[vars]}]]\)], "Input"],
+
+Cell[BoxData[
+    \(APBJacobianMatrix[p_, 
+        apb_] := \[IndentingNewLine]With[{a = A[p, apb], 
+          x = X[p]}, \[IndentingNewLine]JacobianMatrix[a, x]]\)], "Input"],
+
+Cell[BoxData[
+    \(APBJacobian[p_, 
+        apb_] := \[IndentingNewLine]With[{a = A[p, apb], 
+          x = X[p]}, \[IndentingNewLine]If[
+          Length[a] \[Equal] Length[x], \[IndentingNewLine]Det[
+            JacobianMatrix[a, x]], \[IndentingNewLine]0]]\)], "Input"],
+
+Cell[BoxData[
+    \(EjJacobianMatrix[A_, j_, 
+        p_] := \[IndentingNewLine]With[{x = 
+            Xj[j, p]}, \[IndentingNewLine]JacobianMatrix[
+          A[\([PrimaryAj[j, p], j]\)], x]]\)], "Input"],
+
+Cell[BoxData[
+    \(EjJacobian[A_, j_, p_] := \[IndentingNewLine]Det[
+        EjJacobianMatrix[A, j, p]]\)], "Input"],
+
+Cell[TextData[StyleBox["Permutations and Rk",
+  FontWeight->"Bold"]], "Text"],
+
+Cell[BoxData[
+    \(EnumerateRkH[n_, k_, lst_] := \[IndentingNewLine]If[
+        k \[Equal] 0, \[IndentingNewLine]lst, \[IndentingNewLine]EnumerateRkH[
+          n, k - 1, 
+          Flatten[Table[\(Prepend[#, i] &\) /@ lst, {i, 0, k - 1}], 
+            1]]]\)], "Input"],
+
+Cell[BoxData[
+    \(EnumerateRk[n_] := \[IndentingNewLine]EnumerateRkH[n, n - 1, 
+        Table[{i}, {i, 0, n - 1}]]\)], "Input"],
+
+Cell[BoxData[
+    \(Pk[k_, rk_, n_] := \[IndentingNewLine]Join[Range[1, k - rk - 1], {k}, 
+        Range[k - rk, k - 1], Range[k + 1, n]]\)], "Input"],
+
+Cell[BoxData[
+    \(MakePFromRk[
+        rks_] := \[IndentingNewLine]With[{n = 
+            Length[rks]}, \[IndentingNewLine]Fold[ComposePerm[#2, #1] &, 
+          Range[n], 
+          Table[Pk[k, rks[\([k]\)], n], {k, n, 2, \(-1\)}]]]\)], "Input"],
+
+Cell[BoxData[
+    \(Rk[k_, p_] := \[IndentingNewLine]Sum[
+        Iverson[NonconstantBetaQ[p, ApplyPerm[InversePerm[p], k], j]], {j, 
+          Length[p]}]\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell[TextData[Cell[BoxData[
+    \(\[Alpha]\_\(k, k\)\)],
+  FontWeight->"Bold"]], "Text"],
+
+Cell[BoxData[
+    \(Mij[m_, 
+        ij : {{_, _}\  ... }] := \[IndentingNewLine]With[{d = 
+            Dimensions[m]}, \[IndentingNewLine]Delete[m, 
+          Fold[Join[#1, {{#2[\([1]\)]}}, \[IndentingNewLine]\t\t\
+Table[{#2[\([1]\)], k}, {k, 1, 
+                    d[\([1]\)]}], \[IndentingNewLine]\t\tTable[{k, \
+#2[\([2]\)]}, {k, 1, d[\([2]\)]}]] &, \[IndentingNewLine]\t\t\t{}, 
+            ij]]]\)], "Input"],
+
+Cell[BoxData[
+    \(Mij[m_, ij : {_, _}] := Mij[m, {ij}]\)], "Input"],
+
+Cell[BoxData[
+    \(AlphaKKofA[k_, 
+        p_] := \[IndentingNewLine]With[{n = 
+            Length[p]}, \[IndentingNewLine]With[{A = 
+              Table[If[PrimaryAQ[p, i, j], AIJ[i, j], 0], {i, n}, {j, 
+                  n}], \[IndentingNewLine]alphaNotAlone = 
+              Table[{i, ApplyPerm[InversePerm[p], i]}, {i, 
+                  k}]}, \[IndentingNewLine]Det[
+              Mij[A, Drop[alphaNotAlone, {k}]]]/\[IndentingNewLine]If[
+              k \[Equal] n, 1, Det[Mij[A, alphaNotAlone]]]]]\)], "Input"],
+
+Cell[BoxData[
+    \(AlphaKKs[
+        p_] := \[IndentingNewLine]With[{rks = \(Rk[#, p] &\) /@ 
+              Range[Length[p]]}, \[IndentingNewLine]Table[
+          If[rks[\([k]\)] \[Equal] 0, x, AlphaKKofA[k, p]], {k, 1, 
+            Length[p]}]]\)], "Input"],
+
+Cell[BoxData[""], "Input"],
+
+Cell[TextData[StyleBox["Examples",
+  FontWeight->"Bold"]], "Text"],
+
+Cell[BoxData[
+    \(RkTest[
+        n_] := \[IndentingNewLine]With[{p = 
+            RandomPermutation[
+              n]}, \[IndentingNewLine]With[{rks = \(Rk[#, p] &\) /@ 
+                Range[n]}, \[IndentingNewLine]MakePFromRk[rks] \[Equal] 
+            p]]\)], "Input"],
+
+Cell[BoxData[
+    \(JacobianTable[
+        n_] := \[IndentingNewLine]With[{permutations = 
+            Permutations[
+              Range[n]]}, \
+\[IndentingNewLine]TableForm[\[IndentingNewLine]Thread[
+            List[ToCycles /@ permutations, \[IndentingNewLine]MatrixForm /@ 
+                MapThread[
+                  APBJacobianMatrix[#1, #2] &, {Permutations[Range[3]], 
+                    UnionAPB[3]}]]], \[IndentingNewLine]TableDepth \[Rule] 
+            2, \[IndentingNewLine]TableHeadings \[Rule] {None, \(StyleForm[#, 
+                    FontWeight \[Rule] "\<Bold\>"] &\) /@ {"\<p\>", \
+"\<Jacobian Matrix\>"}}]]\)], "Input"],
+
+Cell[BoxData[
+    \(APBTable[
+        n_] := \[IndentingNewLine]With[{permutations = 
+            Permutations[Range[n]], 
+          apb = UnionAPB[n]}, \[IndentingNewLine]With[{as = 
+              SecondaryAs /@ permutations, 
+            betas = NonconstantBetas /@ 
+                permutations, \[IndentingNewLine]akks = 
+              AlphaKKs /@ 
+                permutations}, \[IndentingNewLine]TableForm[\
+\[IndentingNewLine]Thread[
+              List[ToCycles /@ permutations, \ \[IndentingNewLine]MatrixForm /@ 
+                  apb, \[IndentingNewLine]as, \[IndentingNewLine]betas, \
+\[IndentingNewLine]akks, \[IndentingNewLine]MapThread[
+                  APBJacobian[#1, #2] &, {permutations, 
+                    apb}]]], \[IndentingNewLine]TableDepth \[Rule] 2, 
+            TableHeadings \[Rule] {None, \(StyleForm[#, 
+                      FontWeight \[Rule] "\<Bold\>"] &\) /@ {"\<p\>", \
+"\<APB\>", "\<Secondary a\>", "\<Nonconstant \[Beta]\>", "\<\[Alpha] of a\>"\ \
+, "\<Jacobian\>"}}]]]\)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(APBTable[3]\)], "Input"],
+
+Cell[BoxData[
+    TagBox[GridBox[{
+          {
+            TagBox[
+              StyleBox["\<\"p\"\>",
+                FontWeight->"Bold"],
+              (StyleForm[ #, FontWeight -> "Bold"]&)], 
+            TagBox[
+              StyleBox["\<\"APB\"\>",
+                FontWeight->"Bold"],
+              (StyleForm[ #, FontWeight -> "Bold"]&)], 
+            TagBox[
+              StyleBox["\<\"Secondary a\"\>",
+                FontWeight->"Bold"],
+              (StyleForm[ #, FontWeight -> "Bold"]&)], 
+            TagBox[
+              StyleBox["\<\"Nonconstant \[Beta]\"\>",
+                FontWeight->"Bold"],
+              (StyleForm[ #, FontWeight -> "Bold"]&)], 
+            TagBox[
+              StyleBox["\<\"\[Alpha] of a\"\>",
+                FontWeight->"Bold"],
+              (StyleForm[ #, FontWeight -> "Bold"]&)], 
+            TagBox[
+              StyleBox["\<\"Jacobian\"\>",
+                FontWeight->"Bold"],
+              (StyleForm[ #, FontWeight -> "Bold"]&)]},
+          {\({{1}, {2}, {3}}\), 
+            TagBox[
+              RowBox[{"(", "\[NoBreak]", GridBox[{
+                    {\(\[Alpha]\_\(1, 1\)\), \(\[Alpha]\_\(1, 
+                          2\)\), \(\[Alpha]\_\(1, 3\)\)},
+                    {"0", \(\[Alpha]\_\(2, 2\)\), \(\[Alpha]\_\(2, 3\)\)},
+                    {"0", "0", \(\[Alpha]\_\(3, 3\)\)}
+                    }], "\[NoBreak]", ")"}],
+              Function[ BoxForm`e$, 
+                MatrixForm[ BoxForm`e$]]], \({a\_\(2, 1\), a\_\(3, 1\), 
+              a\_\(3, 2\)}\), 
+            InterpretationBox["\<\"\"\>",
+              {}], \({x, x, x}\), "1"},
+          {\({{1}, {3, 2}}\), 
+            TagBox[
+              RowBox[{"(", "\[NoBreak]", GridBox[{
+                    {\(\[Alpha]\_\(1, 1\)\), \(\[Alpha]\_\(1, 
+                          3\)\), \(\[Alpha]\_\(1, 2\) + \[Alpha]\_\(1, 3\)\ \
+\[Beta]\_\(2, 3\)\)},
+                    {
+                      "0", \(\[Alpha]\_\(2, 
+                          3\)\), \(\[Alpha]\_\(2, 2\) + \[Alpha]\_\(2, 3\)\ \
+\[Beta]\_\(2, 3\)\)},
+                    {
+                      "0", \(\[Alpha]\_\(3, 
+                          3\)\), \(\[Alpha]\_\(3, 3\)\ \[Beta]\_\(2, 3\)\)}
+                    }], "\[NoBreak]", ")"}],
+              Function[ BoxForm`e$, 
+                MatrixForm[ BoxForm`e$]]], \({a\_\(2, 1\), 
+              a\_\(3, 1\)}\), \({\[Beta]\_\(2, 3\)}\), \({x, x, 
+              a\_\(3, 2\)}\), \(-\[Alpha]\_\(3, 3\)\)},
+          {\({{2, 1}, {3}}\), 
+            TagBox[
+              RowBox[{"(", "\[NoBreak]", GridBox[{
+                    {\(\[Alpha]\_\(1, 
+                          2\)\), \(\[Alpha]\_\(1, 1\) + \[Alpha]\_\(1, 2\)\ \
+\[Beta]\_\(1, 2\)\), \(\[Alpha]\_\(1, 3\)\)},
+                    {\(\[Alpha]\_\(2, 
+                          2\)\), \(\[Alpha]\_\(2, 2\)\ \[Beta]\_\(1, 2\)\), \
+\(\[Alpha]\_\(2, 3\)\)},
+                    {"0", "0", \(\[Alpha]\_\(3, 3\)\)}
+                    }], "\[NoBreak]", ")"}],
+              Function[ BoxForm`e$, 
+                MatrixForm[ BoxForm`e$]]], \({a\_\(3, 1\), 
+              a\_\(3, 2\)}\), \({\[Beta]\_\(1, 2\)}\), \({x, a\_\(2, 1\), 
+              x}\), \(\[Alpha]\_\(2, 2\)\)},
+          {\({{2, 3, 1}}\), 
+            TagBox[
+              RowBox[{"(", "\[NoBreak]", GridBox[{
+                    {\(\[Alpha]\_\(1, 2\)\), \(\[Alpha]\_\(1, 
+                          3\)\), \(\[Alpha]\_\(1, 1\) + \[Alpha]\_\(1, 2\)\ \
+\[Beta]\_\(1, 3\) + \[Alpha]\_\(1, 3\)\ \[Beta]\_\(2, 3\)\)},
+                    {\(\[Alpha]\_\(2, 2\)\), \(\[Alpha]\_\(2, 
+                          3\)\), \(\[Alpha]\_\(2, 2\)\ \[Beta]\_\(1, 3\) + \
+\[Alpha]\_\(2, 3\)\ \[Beta]\_\(2, 3\)\)},
+                    {
+                      "0", \(\[Alpha]\_\(3, 
+                          3\)\), \(\[Alpha]\_\(3, 3\)\ \[Beta]\_\(2, 3\)\)}
+                    }], "\[NoBreak]", ")"}],
+              Function[ BoxForm`e$, 
+                MatrixForm[ 
+                BoxForm`e$]]], \({a\_\(3, 1\)}\), \({\[Beta]\_\(1, 3\), \
+\[Beta]\_\(2, 3\)}\), \({x, a\_\(2, 1\), 
+              a\_\(3, 2\)}\), \(\(-\[Alpha]\_\(2, 2\)\)\ \[Alpha]\_\(3, \
+3\)\)},
+          {\({{3, 2, 1}}\), 
+            TagBox[
+              RowBox[{"(", "\[NoBreak]", GridBox[{
+                    {\(\[Alpha]\_\(1, 
+                          3\)\), \(\[Alpha]\_\(1, 1\) + \[Alpha]\_\(1, 3\)\ \
+\[Beta]\_\(1, 2\)\), \(\[Alpha]\_\(1, 2\) + \[Alpha]\_\(1, 3\)\ \[Beta]\_\(1, \
+3\)\)},
+                    {\(\[Alpha]\_\(2, 
+                          3\)\), \(\[Alpha]\_\(2, 3\)\ \[Beta]\_\(1, 2\)\), \
+\(\[Alpha]\_\(2, 2\) + \[Alpha]\_\(2, 3\)\ \[Beta]\_\(1, 3\)\)},
+                    {\(\[Alpha]\_\(3, 
+                          3\)\), \(\[Alpha]\_\(3, 3\)\ \[Beta]\_\(1, 2\)\), \
+\(\[Alpha]\_\(3, 3\)\ \[Beta]\_\(1, 3\)\)}
+                    }], "\[NoBreak]", ")"}],
+              Function[ BoxForm`e$, 
+                MatrixForm[ 
+                BoxForm`e$]]], \({a\_\(2, 2\)}\), \({\[Beta]\_\(1, 2\), \
+\[Beta]\_\(1, 3\)}\), \({x, x, a\_\(3, 1\)}\), \(-\[Alpha]\_\(3, 3\)\%2\)},
+          {\({{3, 1}, {2}}\), 
+            TagBox[
+              RowBox[{"(", "\[NoBreak]", GridBox[{
+                    {\(\[Alpha]\_\(1, 
+                          3\)\), \(\[Alpha]\_\(1, 2\) + \[Alpha]\_\(1, 3\)\ \
+\[Beta]\_\(1, 2\)\), \(\[Alpha]\_\(1, 1\) + \[Alpha]\_\(1, 3\)\ \[Beta]\_\(1, \
+3\) + \[Alpha]\_\(1, 2\)\ \[Beta]\_\(2, 3\)\)},
+                    {\(\[Alpha]\_\(2, 
+                          3\)\), \(\[Alpha]\_\(2, 2\) + \[Alpha]\_\(2, 3\)\ \
+\[Beta]\_\(1, 2\)\), \(\[Alpha]\_\(2, 3\)\ \[Beta]\_\(1, 3\) + \[Alpha]\_\(2, \
+2\)\ \[Beta]\_\(2, 3\)\)},
+                    {\(\[Alpha]\_\(3, 
+                          3\)\), \(\[Alpha]\_\(3, 3\)\ \[Beta]\_\(1, 2\)\), \
+\(\[Alpha]\_\(3, 3\)\ \[Beta]\_\(1, 3\)\)}
+                    }], "\[NoBreak]", ")"}],
+              Function[ BoxForm`e$, 
+                MatrixForm[ BoxForm`e$]]], 
+            InterpretationBox["\<\"\"\>",
+              {}], \({\[Beta]\_\(1, 2\), \[Beta]\_\(1, 3\), \[Beta]\_\(2, \
+3\)}\), \({x, \(\(-a\_\(2, 2\)\)\ a\_\(3, 1\) + a\_\(2, 1\)\ a\_\(3, 2\)\)\/a\
+\_\(3, 1\), a\_\(3, 1\)}\), \(\[Alpha]\_\(2, 2\)\ \[Alpha]\_\(3, 3\)\%2\)}
+          },
+        RowSpacings->1,
+        ColumnSpacings->3,
+        RowAlignments->Baseline,
+        ColumnAlignments->{Center}],
+      Function[ BoxForm`e$, 
+        TableForm[ BoxForm`e$, TableDepth -> 2, TableHeadings -> {None, {
+          StyleForm[ "p", FontWeight -> "Bold"], 
+          StyleForm[ "APB", FontWeight -> "Bold"], 
+          StyleForm[ "Secondary a", FontWeight -> "Bold"], 
+          StyleForm[ "Nonconstant \[Beta]", FontWeight -> "Bold"], 
+          StyleForm[ "\[Alpha] of a", FontWeight -> "Bold"], 
+          StyleForm[ "Jacobian", FontWeight -> "Bold"]}}]]]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(ContinuedFraction[\[ExponentialE], 21]\)], "Input"],
+
+Cell[BoxData[
+    \({2, 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 
+      14}\)], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \(\(p = FromCycles[{{1, 4, 2, 5, 3}}];\)\)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(UpperDiagonalB[p] // MatrixForm\)], "Input"],
+
+Cell[BoxData[
+    TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+            {"1", 
+              "0", \(\[Beta]\_\(1, 3\)\), \(\[Beta]\_\(1, 
+                  4\)\), \(\[Beta]\_\(1, 5\)\)},
+            {"0", 
+              "1", \(\[Beta]\_\(2, 3\)\), \(\[Beta]\_\(2, 
+                  4\)\), \(\[Beta]\_\(2, 5\)\)},
+            {"0", "0", "1", "0", "0"},
+            {"0", "0", "0", "1", "0"},
+            {"0", "0", "0", "0", "1"}
+            }], "\[NoBreak]", ")"}],
+      Function[ BoxForm`e$, 
+        MatrixForm[ BoxForm`e$]]]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+    \(\(A = {{2, 1, 2, 1, 1}, {0, 4, 1, 1, 6}, {0, 0, 1, 1, 8}, {0, 0, 0, 1, 
+            1}, {0, 0, 0, 0, 10}};\)\)], "Input"],
+
+Cell[BoxData[
+    \(\(B = {{1, 0, 1, 1, 12}, {0, 1, 1, 1, 14}, {0, 0, 1, 0, 0}, {0, 0, 0, 
+            1, 0}, {0, 0, 0, 0, 1}};\)\)], "Input"],
+
+Cell[BoxData[
+    \(\(P = PermutationMatrix[p];\)\)], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(MatrixForm /@ {A, P, B}\)], "Input"],
+
+Cell[BoxData[
+    RowBox[{"{", 
+      RowBox[{
+        TagBox[
+          RowBox[{"(", "\[NoBreak]", GridBox[{
+                {"2", "1", "2", "1", "1"},
+                {"0", "4", "1", "1", "6"},
+                {"0", "0", "1", "1", "8"},
+                {"0", "0", "0", "1", "1"},
+                {"0", "0", "0", "0", "10"}
+                }], "\[NoBreak]", ")"}],
+          Function[ BoxForm`e$, 
+            MatrixForm[ BoxForm`e$]]], ",", 
+        TagBox[
+          RowBox[{"(", "\[NoBreak]", GridBox[{
+                {"0", "0", "1", "0", "0"},
+                {"0", "0", "0", "1", "0"},
+                {"0", "0", "0", "0", "1"},
+                {"1", "0", "0", "0", "0"},
+                {"0", "1", "0", "0", "0"}
+                }], "\[NoBreak]", ")"}],
+          Function[ BoxForm`e$, 
+            MatrixForm[ BoxForm`e$]]], ",", 
+        TagBox[
+          RowBox[{"(", "\[NoBreak]", GridBox[{
+                {"1", "0", "1", "1", "12"},
+                {"0", "1", "1", "1", "14"},
+                {"0", "0", "1", "0", "0"},
+                {"0", "0", "0", "1", "0"},
+                {"0", "0", "0", "0", "1"}
+                }], "\[NoBreak]", ")"}],
+          Function[ BoxForm`e$, 
+            MatrixForm[ BoxForm`e$]]]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(A . P . B // MatrixForm\)], "Input"],
+
+Cell[BoxData[
+    TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+            {"1", "1", "4", "3", "28"},
+            {"1", "6", "7", "11", "97"},
+            {"1", "8", "9", "9", "125"},
+            {"1", "1", "2", "2", "26"},
+            {"0", "10", "10", "10", "140"}
+            }], "\[NoBreak]", ")"}],
+      Function[ BoxForm`e$, 
+        MatrixForm[ BoxForm`e$]]]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(APB[p] // MatrixForm\)], "Input"],
+
+Cell[BoxData[
+    TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+            {\(\[Alpha]\_\(1, 4\)\), \(\[Alpha]\_\(1, 
+                  5\)\), \(\[Alpha]\_\(1, 1\) + \[Alpha]\_\(1, 4\)\ \[Beta]\_\
+\(1, 3\) + \[Alpha]\_\(1, 5\)\ \[Beta]\_\(2, 3\)\), \(\[Alpha]\_\(1, 2\) + \
+\[Alpha]\_\(1, 4\)\ \[Beta]\_\(1, 4\) + \[Alpha]\_\(1, 5\)\ \[Beta]\_\(2, 4\)\
+\), \(\[Alpha]\_\(1, 3\) + \[Alpha]\_\(1, 4\)\ \[Beta]\_\(1, 5\) + \[Alpha]\_\
+\(1, 5\)\ \[Beta]\_\(2, 5\)\)},
+            {\(\[Alpha]\_\(2, 4\)\), \(\[Alpha]\_\(2, 
+                  5\)\), \(\[Alpha]\_\(2, 4\)\ \[Beta]\_\(1, 3\) + \[Alpha]\_\
+\(2, 5\)\ \[Beta]\_\(2, 3\)\), \(\[Alpha]\_\(2, 2\) + \[Alpha]\_\(2, 4\)\ \
+\[Beta]\_\(1, 4\) + \[Alpha]\_\(2, 5\)\ \[Beta]\_\(2, 4\)\), \(\[Alpha]\_\(2, \
+3\) + \[Alpha]\_\(2, 4\)\ \[Beta]\_\(1, 5\) + \[Alpha]\_\(2, 5\)\ \
+\[Beta]\_\(2, 5\)\)},
+            {\(\[Alpha]\_\(3, 4\)\), \(\[Alpha]\_\(3, 
+                  5\)\), \(\[Alpha]\_\(3, 4\)\ \[Beta]\_\(1, 3\) + \[Alpha]\_\
+\(3, 5\)\ \[Beta]\_\(2, 3\)\), \(\[Alpha]\_\(3, 4\)\ \[Beta]\_\(1, 4\) + \
+\[Alpha]\_\(3, 5\)\ \[Beta]\_\(2, 4\)\), \(\[Alpha]\_\(3, 3\) + \
+\[Alpha]\_\(3, 4\)\ \[Beta]\_\(1, 5\) + \[Alpha]\_\(3, 5\)\ \[Beta]\_\(2, 5\)\
+\)},
+            {\(\[Alpha]\_\(4, 4\)\), \(\[Alpha]\_\(4, 
+                  5\)\), \(\[Alpha]\_\(4, 4\)\ \[Beta]\_\(1, 3\) + \[Alpha]\_\
+\(4, 5\)\ \[Beta]\_\(2, 3\)\), \(\[Alpha]\_\(4, 4\)\ \[Beta]\_\(1, 4\) + \
+\[Alpha]\_\(4, 5\)\ \[Beta]\_\(2, 4\)\), \(\[Alpha]\_\(4, 4\)\ \[Beta]\_\(1, \
+5\) + \[Alpha]\_\(4, 5\)\ \[Beta]\_\(2, 5\)\)},
+            {
+              "0", \(\[Alpha]\_\(5, 
+                  5\)\), \(\[Alpha]\_\(5, 5\)\ \[Beta]\_\(2, 3\)\), \
+\(\[Alpha]\_\(5, 5\)\ \[Beta]\_\(2, 4\)\), \(\[Alpha]\_\(5, 5\)\ \
+\[Beta]\_\(2, 5\)\)}
+            }], "\[NoBreak]", ")"}],
+      Function[ BoxForm`e$, 
+        MatrixForm[ BoxForm`e$]]]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+    \(Det[{{4, 1, 1}, {2, 1, 1}, {10, 0, 10}}]\)], "Input"],
+
+Cell[BoxData[
+    \(20\)], "Output"]
+}, Open  ]]
+},
+FrontEndVersion->"4.1 for X",
+ScreenRectangle->{{0, 800}, {0, 600}},
+WindowSize->{800, 550},
+WindowMargins->{{0, Automatic}, {3, Automatic}}
+]
+
+(*******************************************************************
+Cached data follows.  If you edit this Notebook file directly, not
+using Mathematica, you must remove the line containing CacheID at
+the top of  the file.  The cache data will then be recreated when
+you save this file from within Mathematica.
+*******************************************************************)
+
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+
+(*NotebookFileOutline
+Notebook[{
+Cell[1705, 50, 65, 1, 32, "Text"],
+Cell[1773, 53, 62, 1, 27, "Input"],
+Cell[1838, 56, 53, 1, 27, "Input"],
+Cell[1894, 59, 65, 1, 27, "Input"],
+Cell[1962, 62, 26, 0, 27, "Input"],
+Cell[1991, 64, 70, 1, 32, "Text"],
+Cell[2064, 67, 66, 1, 27, "Input"],
+Cell[2133, 70, 105, 2, 27, "Input"],
+Cell[2241, 74, 82, 1, 27, "Input"],
+Cell[2326, 77, 215, 4, 59, "Input"],
+Cell[2544, 83, 26, 0, 27, "Input"],
+Cell[2573, 85, 45, 1, 32, "Text"],
+Cell[2621, 88, 151, 2, 43, "Input"],
+Cell[2775, 92, 318, 6, 59, "Input"],
+Cell[3096, 100, 328, 6, 59, "Input"],
+Cell[3427, 108, 124, 2, 43, "Input"],
+Cell[3554, 112, 26, 0, 27, "Input"],
+Cell[3583, 114, 66, 1, 32, "Text"],
+Cell[3652, 117, 77, 1, 27, "Input"],
+Cell[3732, 120, 75, 1, 27, "Input"],
+Cell[3810, 123, 56, 1, 27, "Input"],
+Cell[3869, 126, 56, 1, 27, "Input"],
+Cell[3928, 129, 224, 5, 59, "Input"],
+Cell[4155, 136, 153, 3, 43, "Input"],
+Cell[4311, 141, 160, 3, 43, "Input"],
+Cell[4474, 146, 245, 5, 59, "Input"],
+Cell[4722, 153, 120, 2, 43, "Input"],
+Cell[4845, 157, 256, 5, 59, "Input"],
+Cell[5104, 164, 132, 2, 43, "Input"],
+Cell[5239, 168, 114, 2, 43, "Input"],
+Cell[5356, 172, 261, 5, 59, "Input"],
+Cell[5620, 179, 26, 0, 27, "Input"],
+Cell[5649, 181, 81, 2, 27, "Text"],
+Cell[5733, 185, 66, 1, 27, "Input"],
+Cell[5802, 188, 203, 4, 43, "Input"],
+Cell[6008, 194, 111, 2, 43, "Input"],
+Cell[6122, 198, 228, 5, 59, "Input"],
+Cell[6353, 205, 204, 4, 59, "Input"],
+Cell[6560, 211, 232, 5, 59, "Input"],
+Cell[6795, 218, 223, 5, 59, "Input"],
+Cell[7021, 225, 273, 5, 75, "Input"],
+Cell[7297, 232, 239, 5, 59, "Input"],
+Cell[7539, 239, 242, 5, 59, "Input"],
+Cell[7784, 246, 26, 0, 27, "Input"],
+Cell[7813, 248, 51, 1, 32, "Text"],
+Cell[7867, 251, 146, 2, 43, "Input"],
+Cell[8016, 255, 175, 3, 59, "Input"],
+Cell[8194, 260, 273, 5, 91, "Input"],
+Cell[8470, 267, 204, 4, 59, "Input"],
+Cell[8677, 273, 117, 2, 43, "Input"],
+Cell[8797, 277, 77, 1, 32, "Text"],
+Cell[8877, 280, 271, 5, 75, "Input"],
+Cell[9151, 287, 129, 2, 43, "Input"],
+Cell[9283, 291, 150, 2, 43, "Input"],
+Cell[9436, 295, 248, 5, 59, "Input"],
+Cell[9687, 302, 168, 3, 43, "Input"],
+Cell[9858, 307, 26, 0, 27, "Input"],
+Cell[9887, 309, 88, 2, 27, "Text"],
+Cell[9978, 313, 415, 8, 107, "Input"],
+Cell[10396, 323, 69, 1, 27, "Input"],
+Cell[10468, 326, 517, 9, 107, "Input"],
+Cell[10988, 337, 259, 5, 59, "Input"],
+Cell[11250, 344, 26, 0, 27, "Input"],
+Cell[11279, 346, 66, 1, 32, "Text"],
+Cell[11348, 349, 274, 6, 75, "Input"],
+Cell[11625, 357, 641, 12, 123, "Input"],
+Cell[12269, 371, 1023, 19, 251, "Input"],
+
+Cell[CellGroupData[{
+Cell[13317, 394, 44, 1, 27, "Input"],
+Cell[13364, 397, 6749, 143, 364, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[20150, 545, 71, 1, 27, "Input"],
+Cell[20224, 548, 107, 2, 27, "Output"]
+}, Open  ]],
+Cell[20346, 553, 71, 1, 27, "Input"],
+
+Cell[CellGroupData[{
+Cell[20442, 558, 64, 1, 27, "Input"],
+Cell[20509, 561, 550, 14, 112, "Output"]
+}, Open  ]],
+Cell[21074, 578, 141, 2, 27, "Input"],
+Cell[21218, 582, 142, 2, 27, "Input"],
+Cell[21363, 586, 62, 1, 27, "Input"],
+
+Cell[CellGroupData[{
+Cell[21450, 591, 56, 1, 27, "Input"],
+Cell[21509, 594, 1251, 32, 99, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[22797, 631, 56, 1, 27, "Input"],
+Cell[22856, 634, 385, 10, 112, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[23278, 649, 53, 1, 27, "Input"],
+Cell[23334, 652, 1865, 33, 112, "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+Cell[25236, 690, 73, 1, 27, "Input"],
+Cell[25312, 693, 36, 1, 27, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+
+
+(*******************************************************************
+End of Mathematica Notebook file.
+*******************************************************************)
+
